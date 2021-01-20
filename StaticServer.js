@@ -80,7 +80,7 @@ class StaticServer extends EventEmitter {
   }
 
   /**
-   * Индоксный файл
+   * Индексный файл
    * @return {String}
    */
   get indexFile() {
