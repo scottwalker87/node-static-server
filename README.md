@@ -12,7 +12,7 @@ const StaticServer = require("@scottwalker/node-static-server")
 
 // Инициализировать сервер
 const server = new StaticServer({
-  protocol: "http"
+  protocol: "http",
   host: "localhost",
   port: 3030,
   rootDir: "./public",
@@ -36,7 +36,7 @@ server.start()
 protocol - протокол соединения
 host - хост соединения
 port - порт соединения
-rootDir - корневая директория
+rootDir - корневая директория для статических файлов
 indexFile - индексный файл
 notFoundFile - файл показываемый в случае ошибки 404
 mimeTypes - карта расширений и их MIME-типов
