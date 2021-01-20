@@ -1,12 +1,32 @@
 {
-  "name": "node-static-server",
+  "name": "@scottwalker/node-static-server",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Simple node static Server",
+  "author": "scottwalker",
+  "license": "Apache-2.0",
+  "main": "./index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node .",
+    "test": "jest --verbose ./test"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "keywords": [
+    "node static server",
+    "node-static-server",
+    "static-server"
+  ],
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "engineStrict": true,
+  "bugs": {
+    "url": "https://github.com/scottwalker87/node-static-server/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/scottwalker87/node-static-server.git"
+  },
+  "publishConfig": {
+    "registry":"https://npm.pkg.github.com"
+  },
+  "homepage": "https://github.com/scottwalker87/node-static-server#readme"
 }

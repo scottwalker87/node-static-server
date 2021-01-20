@@ -1,8 +1,4 @@
 const StaticServer = require("./StaticServer")
+const mimeTypes = require("./mime-types")
 
-const server = new StaticServer({
-  port: 3030,
-  rootDir: "./public"
-})
-
-server.start()
+module.exports = { StaticServer, mimeTypes }

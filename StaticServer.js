@@ -3,7 +3,6 @@ const https = require("https")
 const fs = require("fs")
 const path = require("path")
 const EventEmitter = require("events")
-const { URL } = require("url")
 const mimeTypes = require("./mime-types")
 
 /**
@@ -126,14 +125,17 @@ class StaticServer extends EventEmitter {
    * Запустить сервер
    */
   start() {
+    const message = `Сервер запущен на ${this.origin}`
+    const data = { origin: this.origin, message }
+
     return new Promise((resolve, reject) => {
       this.server.listen(this.port, this.host, error => {
         if (error) {
           reject(error)
         }
 
-        console.log(`Сервер запущен на ${this.origin}`)
-        resolve(this.origin)
+        this.emit("start", data)
+        resolve(data)
       })
     })
   }
@@ -142,14 +144,17 @@ class StaticServer extends EventEmitter {
    * Остановить сервер
    */
   stop() {
+    const message = `Сервер на ${this.origin} остановлен`
+    const data = { origin: this.origin, message }
+
     return new Promise((resolve, reject) => {
       this.server.close(error => {
         if (error) {
           reject(error)
         }
 
-        console.log("Сервер остановлен")
-        resolve()
+        this.emit("stop", data)
+        resolve(data)
       })
     })
   }
@@ -173,34 +178,25 @@ class StaticServer extends EventEmitter {
     }
 
     try {
-      const url = new URL(request.url, this.origin)
-      const file = url.pathname.substr(1) || this.indexFile
-      const extension = this.getExtension(file)
-      const content = fs.readFileSync(this.resolvePath(file))
+      const file = request.url.substr(1) || this.indexFile
+      const { content, contentType } = this.getContent(file)
 
       // Завершить ответ от сервера
-      end(StaticServer.STATUS_CODE_OK, content, {
-        "Content-Type": this.getContentType(extension)
-      })
+      end(StaticServer.STATUS_CODE_OK, content, { "Content-Type": contentType })
     } catch (error) {
-      let content = ""
-      let contentType = ""
+      let data = {}
 
-      // Если файл доступен для чтения
-      if (this.notFoundFile && fs.accessSync(this.resolvePath(this.notFoundFile), fs.R_OK)) {
-        const extension = this.getExtension(this.notFoundFile)
-
-        content = fs.readFileSync(this.resolvePath(this.notFoundFile))
-        contentType = this.getContentType(extension)
-      } else {
-        content = StaticServer.DEFAULT_NOT_FOUND_MESSAGE
-        contentType = StaticServer.DEFAULT_CONTENT_TYPE
+      try {
+        data = this.getContent(this.notFoundFile)
+      } catch {
+        data = {
+          content: StaticServer.DEFAULT_NOT_FOUND_MESSAGE,
+          contentType: StaticServer.DEFAULT_CONTENT_TYPE
+        }
       }
 
       // Завершить ответ от сервера с ошибкой 404
-      end(StaticServer.STATUS_CODE_NOT_FOUND, content, {
-        "Content-Type": contentType
-      })
+      end(StaticServer.STATUS_CODE_NOT_FOUND, data.content, { "Content-Type": data.contentType })
     }
   }
 
@@ -255,11 +251,17 @@ class StaticServer extends EventEmitter {
    * @param {String} file путь к файлу 
    * @return {Boolean} файл доступен для чтения
    */
-  checkAccess(file) {
-    file = this.normalizePath(file)
+  // checkAccess(file) {
+  //   file = this.normalizePath(file)
 
-    return fs.accessSync(file, fs.R_OK)
-  }
+  //   try {
+  //     fs.accessSync(file, fs.constants.R_OK)
+      
+  //     return true
+  //   } catch {
+  //     return false
+  //   }
+  // }
 
   /**
    * Получить содержимое файла
@@ -271,7 +273,7 @@ class StaticServer extends EventEmitter {
 
     const extension = this.getExtension(file)
     const contentType = this.getContentType(extension)
-    const content = fs.readFileSync(file, fs.R_OK)
+    const content = fs.readFileSync(file)
 
     return { content, contentType }
   }
