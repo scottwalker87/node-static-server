@@ -35,7 +35,7 @@ class StaticServer extends EventEmitter {
     super()
 
     // Проверить на корректность переданного протокола
-    if (config.protocol && [PROTOCOL_HTTP, PROTOCOL_HTTPS].includes(config.protocol)) {
+    if (config.protocol && ![StaticServer.PROTOCOL_HTTP, StaticServer.PROTOCOL_HTTPS].includes(config.protocol)) {
       throw "Необходимо указать поддерживаемый протокол HTTP или HTTPS"
     }
     // Проверить на доступность корневой директории

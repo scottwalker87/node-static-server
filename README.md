@@ -8,7 +8,7 @@
 
 #### Пример использования
 ```js
-const StaticServer = require("@scottwalker/node-static-server")
+const { StaticServer } = require("@scottwalker/node-static-server")
 
 // Инициализировать сервер
 const server = new StaticServer({
